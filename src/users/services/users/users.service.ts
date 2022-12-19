@@ -1,17 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "../../../typeorm";
+import { Users } from "../../../typeorm";
 import { Repository } from "typeorm";
 import { CreateUserDto } from "../../dto/users.dtos";
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>
+    @InjectRepository(Users) private readonly userRepository: Repository<Users>
   ) {}
 
   getUsers() {
-    return this.userRepository;
+    return this.userRepository.find();
   }
 
   createUser(createUserDto: CreateUserDto) {
@@ -20,6 +20,6 @@ export class UsersService {
   }
 
   findUserById(id: number) {
-    return this.userRepository.findOneBy({ id });
+    return this.userRepository.findOneBy({ id: id });
   }
 }
