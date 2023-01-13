@@ -1,10 +1,12 @@
 import { Module } from "@nestjs/common";
 import { SequelizeModule } from "@nestjs/sequelize";
 
-import { UsersModule } from "./users/users.module";
-import { Users } from "./users/models/users.model";
+import { UsersModule } from "./modules/users/users.module";
+import { Users } from "./modules/users/models/users.model";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { RolesModule } from "./modules/roles/roles.module";
+import { Roles } from "./modules/roles/models/roles.model";
 
 @Module({
   imports: [
@@ -15,11 +17,12 @@ import { AppService } from "./app.service";
       username: "postgres",
       password: "postgres",
       database: "mountain",
-      models: [Users],
+      models: [Roles, Users],
       autoLoadModels: true,
       synchronize: true
     }),
-    UsersModule
+    UsersModule,
+    RolesModule
   ],
   controllers: [AppController],
   providers: [AppService]
