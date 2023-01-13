@@ -8,14 +8,17 @@ import {
   UsePipes,
   ValidationPipe
 } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
+
 import { UsersService } from "../../services/users/users.service";
 import { CreateUserDto } from "../../dto/users.dtos";
 
+@ApiTags("Users")
 @Controller("Users")
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
-  @Get()
+  @Get("List")
   getUsers() {
     return this.userService.getUsers();
   }
