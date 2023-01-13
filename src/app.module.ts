@@ -1,9 +1,12 @@
 import { Module } from "@nestjs/common";
 import { SequelizeModule } from "@nestjs/sequelize";
 
+import { CurrenciesModule } from "./modules/currencies/currencies.module";
+import { Currencies } from "./modules/currencies/models/currencies.model";
 import { HikeTypes } from "./modules/hike-types/models/hike-types.model";
 import { HikeTypesModule } from "./modules/hike-types/hike-types.module";
 import { LevelsModule } from "./modules/levels/levels.module";
+import { Levels } from "./modules/levels/models/levels.model";
 import { UsersModule } from "./modules/users/users.module";
 import { Users } from "./modules/users/models/users.model";
 import { RolesModule } from "./modules/roles/roles.module";
@@ -20,14 +23,15 @@ import { AppService } from "./app.service";
       username: "postgres",
       password: "postgres",
       database: "mountain",
-      models: [Roles, Users, HikeTypes],
+      models: [Roles, Users, HikeTypes, Levels, Currencies],
       autoLoadModels: true,
       synchronize: true
     }),
     UsersModule,
     RolesModule,
     HikeTypesModule,
-    LevelsModule
+    LevelsModule,
+    CurrenciesModule
   ],
   controllers: [AppController],
   providers: [AppService]
