@@ -7,6 +7,8 @@ import { HikeTypes } from "./modules/hike-types/models/hike-types.model";
 import { HikeTypesModule } from "./modules/hike-types/hike-types.module";
 import { LevelsModule } from "./modules/levels/levels.module";
 import { Levels } from "./modules/levels/models/levels.model";
+import { HikingModule } from "./modules/hiking/hiking.module";
+import { Hiking } from "./modules/hiking/models/hiking.model";
 import { UsersModule } from "./modules/users/users.module";
 import { Users } from "./modules/users/models/users.model";
 import { RolesModule } from "./modules/roles/roles.module";
@@ -23,7 +25,7 @@ import { AppService } from "./app.service";
       username: "postgres",
       password: "postgres",
       database: "mountain",
-      models: [Roles, Users, HikeTypes, Levels, Currencies],
+      models: [Roles, Users, HikeTypes, Levels, Currencies, Hiking],
       autoLoadModels: true,
       synchronize: true
     }),
@@ -31,7 +33,8 @@ import { AppService } from "./app.service";
     RolesModule,
     HikeTypesModule,
     LevelsModule,
-    CurrenciesModule
+    CurrenciesModule,
+    HikingModule
   ],
   controllers: [AppController],
   providers: [AppService]
