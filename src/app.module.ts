@@ -3,6 +3,7 @@ import { SequelizeModule } from "@nestjs/sequelize";
 
 import { HikeTypes } from "./modules/hike-types/models/hike-types.model";
 import { HikeTypesModule } from "./modules/hike-types/hike-types.module";
+import { LevelsModule } from "./modules/levels/levels.module";
 import { UsersModule } from "./modules/users/users.module";
 import { Users } from "./modules/users/models/users.model";
 import { RolesModule } from "./modules/roles/roles.module";
@@ -25,7 +26,8 @@ import { AppService } from "./app.service";
     }),
     UsersModule,
     RolesModule,
-    HikeTypesModule
+    HikeTypesModule,
+    LevelsModule
   ],
   controllers: [AppController],
   providers: [AppService]

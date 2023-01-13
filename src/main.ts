@@ -9,9 +9,6 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle("Swagger")
     .setVersion("1.0")
-    .addTag("Users")
-    .addTag("Roles")
-    .addTag("HikeTypes")
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
