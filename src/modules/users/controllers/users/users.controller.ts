@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Param,
   ParseIntPipe,
   Post,
@@ -12,6 +13,8 @@ import { ApiTags } from "@nestjs/swagger";
 
 import { UsersService } from "../../services/users/users.service";
 import { CreateUserDto } from "../../dto/users.dtos";
+import { AuthUser } from "../../dto/auth-user.dtos";
+import { Users } from "../../models/users.model";
 
 @ApiTags("Users")
 @Controller("Users")
@@ -32,5 +35,12 @@ export class UsersController {
   @UsePipes(ValidationPipe)
   createUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
+  }
+
+  @Post("Authorization")
+  @UsePipes(ValidationPipe)
+  @HttpCode(200)
+  auth(@Body() authUser: AuthUser) {
+    return this.userService.auth(authUser);
   }
 }
