@@ -13,8 +13,7 @@ export class UsersService {
   }
 
   createUser(createUserDto: CreateUserDto) {
-    // const newUser = this.userRepository.create(createUserDto);
-    // return this.userRepository.save(newUser);
+    return this.userRepository.create({ ...createUserDto });
   }
 
   findUserById(id: number) {

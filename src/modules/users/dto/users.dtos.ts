@@ -9,6 +9,8 @@ export class CreateUserDto {
 
   patronymic: string;
 
+  @MinLength(2)
+  @IsNotEmpty()
   country: string;
 
   @IsNotEmpty()
@@ -26,9 +28,6 @@ export class CreateUserDto {
   password: string;
 
   isCompany: boolean;
-
-  @MinLength(3)
   companyName: string;
-
   instagram: string;
 }
