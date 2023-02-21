@@ -21,7 +21,7 @@ export class CreateUserDto {
   email: string;
 
   @IsNotEmpty()
-  phones: string[];
+  phone: string;
 
   @IsNotEmpty()
   @MinLength(8)

@@ -39,13 +39,10 @@ export class Users extends Model {
   email: string;
 
   @Column({
-    type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: false,
-    validate: {
-      isArray: true
-    }
+    unique: true
   })
-  phones: string[];
+  phone: string;
 
   @Column({
     allowNull: false
