@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { UserHikingInterest } from "../../models/user-hiking-interest.model";
+import { Hikings } from "../../../hiking/models/hiking.model";
+import { Users } from "../../../users/models/users.model";
 
 @Injectable()
 export class UserHikingInterestService {
@@ -10,6 +12,8 @@ export class UserHikingInterestService {
   ) {}
 
   getList() {
-    return this.userHikingRepository.findAll();
+    return this.userHikingRepository.findAll({
+      include: [Hikings, Users]
+    });
   }
 }

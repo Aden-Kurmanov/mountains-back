@@ -1,26 +1,32 @@
-import { Column, Model, Table } from "sequelize-typescript";
+import {
+  BelongsTo,
+  Column,
+  ForeignKey,
+  Model,
+  Table
+} from "sequelize-typescript";
 import { Hikings } from "../../hiking/models/hiking.model";
 import { Users } from "../../users/models/users.model";
 
 @Table
 export class UserHikingInterest extends Model {
+  @ForeignKey(() => Hikings)
   @Column({
-    allowNull: false,
-    references: {
-      model: Hikings,
-      key: "id"
-    }
+    allowNull: false
   })
   hikingId: number;
 
+  @BelongsTo(() => Hikings)
+  hiking: Hikings;
+
+  @ForeignKey(() => Users)
   @Column({
-    allowNull: false,
-    references: {
-      model: Users,
-      key: "id"
-    }
+    allowNull: false
   })
   userId: number;
+
+  @BelongsTo(() => Users)
+  user: Users;
 
   @Column({})
   comment: string;
