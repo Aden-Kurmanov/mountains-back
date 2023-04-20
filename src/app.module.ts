@@ -8,13 +8,17 @@ import { HikeTypesModule } from "./modules/hike-types/hike-types.module";
 import { LevelsModule } from "./modules/levels/levels.module";
 import { Levels } from "./modules/levels/models/levels.model";
 import { HikingModule } from "./modules/hiking/hiking.module";
-import { Hiking } from "./modules/hiking/models/hiking.model";
+import { Hikings } from "./modules/hiking/models/hiking.model";
 import { UsersModule } from "./modules/users/users.module";
 import { Users } from "./modules/users/models/users.model";
-import { RolesModule } from "./modules/roles/roles.module";
-import { Roles } from "./modules/roles/models/roles.model";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { UserHikingOrderModule } from "./modules/user-hiking-order/user-hiking-order.module";
+import { UserHikingInterestModule } from "./modules/user-hiking-interest/user-hiking-interest.module";
+import { UserHikingInterest } from "./modules/user-hiking-interest/models/user-hiking-interest.model";
+import { UserHikingOrder } from "./modules/user-hiking-order/models/user-hiking-order.model";
+import { CompaniesModule } from "./modules/companies/companies.module";
+import { Companies } from "./modules/companies/models/companies.model";
 
 @Module({
   imports: [
@@ -25,16 +29,26 @@ import { AppService } from "./app.service";
       username: "postgres",
       password: "postgres",
       database: "mountain",
-      models: [Roles, Users, HikeTypes, Levels, Currencies, Hiking],
-      autoLoadModels: true,
+      models: [
+        Users,
+        HikeTypes,
+        Levels,
+        Currencies,
+        Hikings,
+        UserHikingInterest,
+        UserHikingOrder,
+        Companies
+      ],
       synchronize: true
     }),
     UsersModule,
-    RolesModule,
     HikeTypesModule,
     LevelsModule,
     CurrenciesModule,
-    HikingModule
+    HikingModule,
+    UserHikingInterestModule,
+    UserHikingOrderModule,
+    CompaniesModule
   ],
   controllers: [AppController],
   providers: [AppService]

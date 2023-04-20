@@ -1,8 +1,3 @@
-insert into "Roles" ("name", "code") values
-                                         ('Админ', 'root'),
-                                         ('Компания', 'company'),
-                                         ('Пользователь', 'user');
-
 insert into "HikeTypes" ("name", "code") values
                             ('Треккинг', 'trekking'),
                             ('Хайкинг', 'hiking'),

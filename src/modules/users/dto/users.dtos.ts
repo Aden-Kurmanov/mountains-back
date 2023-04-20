@@ -14,9 +14,6 @@ export class CreateUserDto {
   country: string;
 
   @IsNotEmpty()
-  roleId: number;
-
-  @IsNotEmpty()
   @IsEmail()
   email: string;
 
@@ -27,7 +24,5 @@ export class CreateUserDto {
   @MinLength(8)
   password: string;
 
-  isCompany: boolean;
-  companyName: string;
   instagram: string;
 }

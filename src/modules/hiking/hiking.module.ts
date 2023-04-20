@@ -1,12 +1,12 @@
 import { Module } from "@nestjs/common";
 import { SequelizeModule } from "@nestjs/sequelize";
-import { Hiking } from "./models/hiking.model";
-import { HikingController } from "./controllers/hiking/hiking.controller";
-import { HikingService } from "./services/hiking/hiking.service";
+import { Hikings } from "./models/hiking.model";
+import { HikingsController } from "./controllers/hiking/hiking.controller";
+import { HikingsService } from "./services/hiking/hiking.service";
 
 @Module({
-  imports: [SequelizeModule.forFeature([Hiking])],
-  controllers: [HikingController],
-  providers: [HikingService]
+  imports: [SequelizeModule.forFeature([Hikings])],
+  controllers: [HikingsController],
+  providers: [HikingsService]
 })
 export class HikingModule {}
