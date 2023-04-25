@@ -25,7 +25,7 @@ import { Companies } from "./modules/companies/models/companies.model";
     SequelizeModule.forRoot({
       dialect: "postgres",
       host: "77.240.38.19",
-      port: 5432,
+      port: 5433,
       username: "postgres",
       password: "postgres",
       database: "mountain",

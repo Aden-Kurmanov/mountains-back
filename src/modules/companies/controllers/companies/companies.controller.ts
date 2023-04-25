@@ -3,10 +3,11 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   UsePipes,
   ValidationPipe
 } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiQuery, ApiTags } from "@nestjs/swagger";
 import { CompaniesService } from "../../services/companies/companies.service";
 import { CreateCompanyDto } from "../../models/create-company-dto.model";
 
@@ -18,6 +19,12 @@ export class CompaniesController {
   @Get("List")
   getList() {
     return this.service.getList();
+  }
+
+  @Get("ById")
+  @ApiQuery({ name: "id", type: "number" })
+  getById(@Query() query: { id: number }) {
+    return this.service.getById(query);
   }
 
   @Post("CreateCompany")

@@ -2,15 +2,23 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Companies } from "../../models/companies.model";
 import { CreateCompanyDto } from "../../models/create-company-dto.model";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class CompaniesService {
   constructor(
+    private jwtService: JwtService,
     @InjectModel(Companies) private companiesRepository: typeof Companies
   ) {}
 
   getList() {
     return this.companiesRepository.findAll();
+  }
+
+  getById({ id }) {
+    return this.companiesRepository.findOne({
+      where: { id }
+    });
   }
 
   async createCompany(createCompanyDto: CreateCompanyDto) {
@@ -39,6 +47,16 @@ export class CompaniesService {
       });
     }
 
-    return this.companiesRepository.create({ ...createCompanyDto });
+    const newCompany = await this.companiesRepository.create({
+      ...createCompanyDto
+    });
+    const payload = { companyId: newCompany.id };
+    const token = this.jwtService.sign(payload);
+
+    return { token };
+  }
+
+  sign(payload: any): Promise<string> {
+    return this.jwtService.signAsync(payload);
   }
 }
