@@ -3,6 +3,7 @@ import { InjectModel } from "@nestjs/sequelize";
 import { Companies } from "../../models/companies.model";
 import { CreateCompanyDto } from "../../models/create-company-dto.model";
 import { JwtService } from "@nestjs/jwt";
+import { CompanyLoginDto } from "../../models/company-login-dto.model";
 
 @Injectable()
 export class CompaniesService {
@@ -53,6 +54,31 @@ export class CompaniesService {
     const payload = { companyId: newCompany.id };
     const token = this.jwtService.sign(payload);
 
+    return { token };
+  }
+
+  async login(body: CompanyLoginDto) {
+    const existsByEmail = await this.companiesRepository.findOne({
+      where: {
+        email: body.email
+      }
+    });
+
+    if (!existsByEmail) {
+      return new BadRequestException({
+        status: 400,
+        description: "Неверный логин"
+      });
+    }
+
+    if (existsByEmail.password !== body.password) {
+      return new BadRequestException({
+        status: 400,
+        description: "Неверный пароль"
+      });
+    }
+
+    const token = await this.jwtService.sign({ companyId: existsByEmail.id });
     return { token };
   }
 
