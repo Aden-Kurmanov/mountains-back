@@ -31,7 +31,8 @@ export class AuthCompaniesService implements CanActivate {
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers["authorization"]?.split(" ") ?? [];
+    const [type, token] =
+      request.headers["Authorization-company"]?.split(" ") ?? [];
     return type === "Bearer" ? token : undefined;
   }
 }

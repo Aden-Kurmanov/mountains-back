@@ -78,7 +78,7 @@ export class CompaniesService {
       });
     }
 
-    const token = await this.jwtService.sign({ companyId: existsByEmail.id });
+    const token = this.jwtService.sign({ companyId: existsByEmail.id });
     return { token };
   }
 
