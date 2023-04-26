@@ -54,7 +54,7 @@ export class CompaniesService {
     const payload = { companyId: newCompany.id };
     const token = this.jwtService.sign(payload);
 
-    return { token };
+    return { token, company: newCompany };
   }
 
   async login(body: CompanyLoginDto) {
@@ -79,7 +79,7 @@ export class CompaniesService {
     }
 
     const token = this.jwtService.sign({ companyId: existsByEmail.id });
-    return { token };
+    return { token, company: existsByEmail };
   }
 
   sign(payload: any): Promise<string> {
