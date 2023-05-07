@@ -4,10 +4,20 @@ import { SequelizeModule } from "@nestjs/sequelize";
 import { UsersController } from "./controllers/users/users.controller";
 import { UsersService } from "./services/users/users.service";
 import { Users } from "./models/users.model";
+import { AuthUsersService } from "./services/auth-users/auth-users.service";
+import { JwtModule } from "@nestjs/jwt";
+import { UserSecretKey } from "./data/user-secret-key";
 
 @Module({
-  imports: [SequelizeModule.forFeature([Users])],
+  imports: [
+    SequelizeModule.forFeature([Users]),
+    JwtModule.register({
+      global: true,
+      secret: UserSecretKey,
+      signOptions: { expiresIn: "1h" }
+    })
+  ],
   controllers: [UsersController],
-  providers: [UsersService]
+  providers: [UsersService, AuthUsersService]
 })
 export class UsersModule {}

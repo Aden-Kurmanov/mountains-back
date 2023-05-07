@@ -1,20 +1,60 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException
+} from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 
 import { CreateUserDto } from "../../dto/users.dtos";
 import { AuthUser } from "../../dto/auth-user.dtos";
 import { Users } from "../../models/users.model";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(Users) private userRepository: typeof Users) {}
+  constructor(
+    private jwtService: JwtService,
+    @InjectModel(Users) private userRepository: typeof Users
+  ) {}
 
   getUsers() {
     return this.userRepository.findAll();
   }
 
-  createUser(createUserDto: CreateUserDto) {
-    return this.userRepository.create({ ...createUserDto });
+  async createUser(createUserDto: CreateUserDto) {
+    const isExistsByEmail = await this.userRepository.findOne({
+      where: {
+        email: createUserDto.email
+      }
+    });
+
+    if (isExistsByEmail) {
+      return new BadRequestException({
+        status: 400,
+        description: "Пользователь с такой почтой уже существует!"
+      });
+    }
+
+    const isExistsByPhone = await this.userRepository.findOne({
+      where: {
+        phone: createUserDto.phone
+      }
+    });
+
+    if (isExistsByPhone) {
+      return new BadRequestException({
+        status: 400,
+        description: "Польщзователь с таким телефоном уже существует!"
+      });
+    }
+
+    const newUser = await this.userRepository.create({
+      ...createUserDto
+    });
+    const payload = { userId: newUser.id };
+    const token = this.jwtService.sign(payload);
+
+    return { token, user: newUser };
   }
 
   findUserById(id: number) {
@@ -23,28 +63,42 @@ export class UsersService {
     });
   }
 
-  async auth(authUser: AuthUser) {
-    const userExists = await this.userRepository.findOne({
+  async auth(body: AuthUser) {
+    const existsByEmail = await this.userRepository.findOne({
       where: {
-        email: authUser.email
+        email: body.email
       }
     });
-    if (!userExists) {
+
+    if (!existsByEmail) {
       return new BadRequestException({
         status: 400,
-        description: "Неверный email или пароль!",
+        description: "Неверный логин"
       });
     }
 
-    const samePassword = userExists.password === authUser.password;
-
-    if (!samePassword) {
+    if (existsByEmail.password !== body.password) {
       return new BadRequestException({
         status: 400,
-        description: "Неверный email или пароль!"
+        description: "Неверный пароль"
       });
     }
 
-    return userExists;
+    const token = this.jwtService.sign({ userId: existsByEmail.id });
+    return { token, user: existsByEmail };
+  }
+
+  async getCurrentUserByToken(token: string) {
+    try {
+      const decoded = this.jwtService.verify(token);
+      const userId = decoded.sub;
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      if (!user) {
+        throw new UnauthorizedException();
+      }
+      return user;
+    } catch (err) {
+      throw new UnauthorizedException();
+    }
   }
 }

@@ -30,7 +30,12 @@ export class UsersController {
     return this.userService.findUserById(id);
   }
 
-  @Post("Create")
+  @Get("GetUserByToken")
+  getCurrentUserByToken(@Param("token") token: string) {
+    return this.userService.getCurrentUserByToken(token);
+  }
+
+  @Post("CreateUser")
   @UsePipes(ValidationPipe)
   createUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
