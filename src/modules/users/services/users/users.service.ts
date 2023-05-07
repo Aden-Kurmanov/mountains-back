@@ -18,7 +18,20 @@ export class UsersService {
   ) {}
 
   getUsers() {
-    return this.userRepository.findAll();
+    return this.userRepository.findAll().then((users) => {
+      return users.map((u) => {
+        return {
+          country: u.country,
+          email: u.email,
+          firstName: u.firstName,
+          id: u.id,
+          instagram: u.instagram,
+          lastName: u.lastName,
+          patronymic: u.patronymic,
+          phone: u.phone
+        };
+      });
+    });
   }
 
   async createUser(createUserDto: CreateUserDto) {
@@ -54,13 +67,38 @@ export class UsersService {
     const payload = { userId: newUser.id };
     const token = this.jwtService.sign(payload);
 
-    return { token, user: newUser };
+    return {
+      token,
+      user: {
+        country: newUser.country,
+        email: newUser.email,
+        firstName: newUser.firstName,
+        id: newUser.id,
+        instagram: newUser.instagram,
+        lastName: newUser.lastName,
+        patronymic: newUser.patronymic,
+        phone: newUser.phone
+      }
+    };
   }
 
   findUserById(id: number) {
-    return this.userRepository.findOne({
-      where: { id }
-    });
+    return this.userRepository
+      .findOne({
+        where: { id }
+      })
+      .then((u) => {
+        return {
+          country: u.country,
+          email: u.email,
+          firstName: u.firstName,
+          id: u.id,
+          instagram: u.instagram,
+          lastName: u.lastName,
+          patronymic: u.patronymic,
+          phone: u.phone
+        };
+      });
   }
 
   async auth(body: AuthUser) {
@@ -85,7 +123,19 @@ export class UsersService {
     }
 
     const token = this.jwtService.sign({ userId: existsByEmail.id });
-    return { token, user: existsByEmail };
+    return {
+      token,
+      user: {
+        country: existsByEmail.country,
+        email: existsByEmail.email,
+        firstName: existsByEmail.firstName,
+        id: existsByEmail.id,
+        instagram: existsByEmail.instagram,
+        lastName: existsByEmail.lastName,
+        patronymic: existsByEmail.patronymic,
+        phone: existsByEmail.phone
+      }
+    };
   }
 
   async getCurrentUserByToken(token: string | null) {
@@ -103,7 +153,16 @@ export class UsersService {
     }
     return {
       status: 200,
-      result: user
+      result: {
+        country: user.country,
+        email: user.email,
+        firstName: user.firstName,
+        id: user.id,
+        instagram: user.instagram,
+        lastName: user.lastName,
+        patronymic: user.patronymic,
+        phone: user.phone
+      }
     };
   }
 }
