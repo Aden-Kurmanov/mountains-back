@@ -88,17 +88,19 @@ export class UsersService {
     return { token, user: existsByEmail };
   }
 
-  async getCurrentUserByToken(token: string) {
-    try {
-      const decoded = this.jwtService.verify(token);
-      const userId = decoded.sub;
-      const user = await this.userRepository.findOne({ where: { id: userId } });
-      if (!user) {
-        throw new UnauthorizedException();
-      }
-      return user;
-    } catch (err) {
+  async getCurrentUserByToken(token: string | null) {
+    if (!token) {
+      throw new UnauthorizedException({
+        description: "Необходимо авторизоваться",
+        status: 400
+      });
+    }
+    const decoded = this.jwtService.decode(token);
+    const userId = decoded["userId"];
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
       throw new UnauthorizedException();
     }
+    return user;
   }
 }

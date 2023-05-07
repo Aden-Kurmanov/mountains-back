@@ -6,10 +6,11 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   UsePipes,
   ValidationPipe
 } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiQuery, ApiTags } from "@nestjs/swagger";
 
 import { UsersService } from "../../services/users/users.service";
 import { CreateUserDto } from "../../dto/users.dtos";
@@ -31,8 +32,9 @@ export class UsersController {
   }
 
   @Get("GetUserByToken")
-  getCurrentUserByToken(@Param("token") token: string) {
-    return this.userService.getCurrentUserByToken(token);
+  @ApiQuery({ name: "token", type: "string" })
+  getCurrentUserByToken(@Query() query: { token: string }) {
+    return this.userService.getCurrentUserByToken(query?.token || null);
   }
 
   @Post("CreateUser")
@@ -41,10 +43,10 @@ export class UsersController {
     return this.userService.createUser(createUserDto);
   }
 
-  @Post("Authorization")
+  @Post("Login")
   @UsePipes(ValidationPipe)
   @HttpCode(200)
-  auth(@Body() authUser: AuthUser) {
+  login(@Body() authUser: AuthUser) {
     return this.userService.auth(authUser);
   }
 }
