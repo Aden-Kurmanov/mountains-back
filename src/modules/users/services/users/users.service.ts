@@ -101,6 +101,9 @@ export class UsersService {
     if (!user) {
       throw new UnauthorizedException();
     }
-    return user;
+    return {
+      status: 200,
+      result: user
+    };
   }
 }
