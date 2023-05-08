@@ -28,7 +28,10 @@ export class UsersService {
           instagram: u.instagram,
           lastName: u.lastName,
           patronymic: u.patronymic,
-          phone: u.phone
+          phone: u.phone,
+          fullName:
+            `${u.lastName} ${u.firstName}` +
+            (u.patronymic ? ` ${u.patronymic}` : "")
         };
       });
     });
@@ -77,7 +80,10 @@ export class UsersService {
         instagram: newUser.instagram,
         lastName: newUser.lastName,
         patronymic: newUser.patronymic,
-        phone: newUser.phone
+        phone: newUser.phone,
+        fullName:
+          `${newUser.lastName} ${newUser.firstName}` +
+          (newUser.patronymic ? ` ${newUser.patronymic}` : "")
       }
     };
   }
@@ -96,7 +102,10 @@ export class UsersService {
           instagram: u.instagram,
           lastName: u.lastName,
           patronymic: u.patronymic,
-          phone: u.phone
+          phone: u.phone,
+          fullName:
+            `${u.lastName} ${u.firstName}` +
+            (u.patronymic ? ` ${u.patronymic}` : "")
         };
       });
   }
@@ -133,7 +142,10 @@ export class UsersService {
         instagram: existsByEmail.instagram,
         lastName: existsByEmail.lastName,
         patronymic: existsByEmail.patronymic,
-        phone: existsByEmail.phone
+        phone: existsByEmail.phone,
+        fullName:
+          `${existsByEmail.lastName} ${existsByEmail.firstName}` +
+          (existsByEmail.patronymic ? ` ${existsByEmail.patronymic}` : "")
       }
     };
   }
@@ -161,7 +173,10 @@ export class UsersService {
         instagram: user.instagram,
         lastName: user.lastName,
         patronymic: user.patronymic,
-        phone: user.phone
+        phone: user.phone,
+        fullName:
+          `${user.lastName} ${user.firstName}` +
+          (user.patronymic ? ` ${user.patronymic}` : "")
       }
     };
   }
