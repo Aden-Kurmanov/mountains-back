@@ -28,6 +28,12 @@ export class CompaniesController {
     return this.service.getById(query);
   }
 
+  @Get("GetCompanyByToken")
+  @ApiQuery({ name: "token", type: "string" })
+  getCurrentCompanyByToken(@Query() query: { token: string }) {
+    return this.service.getCurrentCompanyByToken(query?.token || null);
+  }
+
   @Post("CreateCompany")
   @UsePipes(ValidationPipe)
   createCompany(@Body() createCompanyDto: CreateCompanyDto) {

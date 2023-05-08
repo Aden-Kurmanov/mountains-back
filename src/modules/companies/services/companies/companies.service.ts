@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException
+} from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Companies } from "../../models/companies.model";
 import { CreateCompanyDto } from "../../models/create-company-dto.model";
@@ -13,13 +17,33 @@ export class CompaniesService {
   ) {}
 
   getList() {
-    return this.companiesRepository.findAll();
+    return this.companiesRepository.findAll().then((companies) => {
+      return companies.map((company) => {
+        return {
+          id: company.id,
+          name: company.name,
+          email: company.email,
+          phone: company.phone,
+          instagram: company.instagram
+        };
+      });
+    });
   }
 
   getById({ id }) {
-    return this.companiesRepository.findOne({
-      where: { id }
-    });
+    return this.companiesRepository
+      .findOne({
+        where: { id }
+      })
+      .then((company) => {
+        return {
+          id: company.id,
+          name: company.name,
+          email: company.email,
+          phone: company.phone,
+          instagram: company.instagram
+        };
+      });
   }
 
   async createCompany(createCompanyDto: CreateCompanyDto) {
@@ -54,7 +78,16 @@ export class CompaniesService {
     const payload = { companyId: newCompany.id };
     const token = this.jwtService.sign(payload);
 
-    return { token, company: newCompany };
+    return {
+      token,
+      company: {
+        id: newCompany.id,
+        name: newCompany.name,
+        email: newCompany.email,
+        phone: newCompany.phone,
+        instagram: newCompany.instagram
+      }
+    };
   }
 
   async login(body: CompanyLoginDto) {
@@ -79,10 +112,42 @@ export class CompaniesService {
     }
 
     const token = this.jwtService.sign({ companyId: existsByEmail.id });
-    return { token, company: existsByEmail };
+    return {
+      token,
+      company: {
+        id: existsByEmail.id,
+        name: existsByEmail.name,
+        email: existsByEmail.email,
+        phone: existsByEmail.phone,
+        instagram: existsByEmail.instagram
+      }
+    };
   }
 
-  sign(payload: any): Promise<string> {
-    return this.jwtService.signAsync(payload);
+  async getCurrentCompanyByToken(token: string | null) {
+    if (!token) {
+      throw new UnauthorizedException({
+        description: "Необходимо авторизоваться",
+        status: 400
+      });
+    }
+    const decoded = this.jwtService.decode(token);
+    const companyId = decoded["companyId"];
+    const company = await this.companiesRepository.findOne({
+      where: { id: companyId }
+    });
+    if (!company) {
+      throw new UnauthorizedException();
+    }
+    return {
+      status: 200,
+      result: {
+        id: company.id,
+        name: company.name,
+        email: company.email,
+        phone: company.phone,
+        instagram: company.instagram
+      }
+    };
   }
 }
