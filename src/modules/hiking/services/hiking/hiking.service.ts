@@ -43,7 +43,17 @@ export class HikingsService {
     if (images && images.length > 0) {
       for (let i = 0; i < images.length; i++) {
         const imageFileName = uuid() + path.extname(images[i].originalname);
-        const imagePath = path.join("assets/files", imageFileName);
+        const imagePath = path.join(
+          __dirname,
+          "..",
+          "..",
+          "..",
+          "..",
+          "..",
+          "public",
+          "images",
+          imageFileName
+        );
         fs.writeFileSync(imagePath, images[i].buffer);
 
         pathImages.push(imageFileName);
@@ -69,15 +79,24 @@ export class HikingsService {
     );
     const companyId = decoded["companyId"];
 
-    const hikings = await this.hikingRepository.findAll({
-      where: {
-        startDate: {
-          [Op.gte]: moment().format("YYYY-MM-DD")
+    const hikings = await this.hikingRepository
+      .findAll({
+        where: {
+          startDate: {
+            [Op.gte]: moment().format("YYYY-MM-DD")
+          },
+          guideId: companyId
         },
-        guideId: companyId
-      },
-      include: [Levels, HikeTypes, Companies, Currencies]
-    });
+        include: [Levels, HikeTypes, Companies, Currencies]
+      })
+      .then((data) => {
+        data.forEach((hike) => {
+          hike.images = (hike.images || []).map((image) => {
+            return "/images/" + image;
+          });
+        });
+        return data;
+      });
 
     return {
       success: true,
