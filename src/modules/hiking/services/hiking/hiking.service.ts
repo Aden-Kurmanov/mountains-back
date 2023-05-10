@@ -1,6 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { v4 as uuid } from "uuid";
+import { Request } from "express";
+import * as moment from "moment";
+import { Op } from "sequelize";
 import * as path from "path";
 import * as fs from "fs";
 
@@ -10,10 +13,15 @@ import { Companies } from "../../../companies/models/companies.model";
 import { CreateHikingDto } from "../../dto/create-hiking.dtos";
 import { Levels } from "../../../levels/models/levels.model";
 import { Hikings } from "../../models/hiking.model";
+import { JwtService } from "@nestjs/jwt";
+import { getToken } from "../../../../shared/get-token";
 
 @Injectable()
 export class HikingsService {
-  constructor(@InjectModel(Hikings) private hikingRepository: typeof Hikings) {}
+  constructor(
+    @InjectModel(Hikings) private hikingRepository: typeof Hikings,
+    private jwtService: JwtService
+  ) {}
 
   getList() {
     return this.hikingRepository.findAll({
@@ -52,6 +60,28 @@ export class HikingsService {
     return {
       success: true,
       result: hiking
+    };
+  }
+
+  async getUnCompleteHikes(req: Request) {
+    const decoded = this.jwtService.decode(
+      getToken(req.headers["authorization-company"] as string)
+    );
+    const companyId = decoded["companyId"];
+
+    const hikings = await this.hikingRepository.findAll({
+      where: {
+        startDate: {
+          [Op.gte]: moment().format("YYYY-MM-DD")
+        },
+        guideId: companyId
+      },
+      include: [Levels, HikeTypes, Companies, Currencies]
+    });
+
+    return {
+      success: true,
+      result: hikings
     };
   }
 }
