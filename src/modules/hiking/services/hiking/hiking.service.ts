@@ -42,6 +42,8 @@ export class HikingsService {
       }
     }
 
+    delete hike.id;
+
     const hiking = await this.hikingRepository.create({
       ...hike,
       ...{ images: pathImages }
