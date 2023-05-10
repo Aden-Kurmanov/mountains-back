@@ -63,10 +63,7 @@ export class Hikings extends Model {
 
   @Column({
     type: DataTypes.ARRAY(DataTypes.TEXT),
-    allowNull: false,
-    validate: {
-      isArray: true
-    }
+    allowNull: false
   })
   images: string[];
 
