@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Post,
   Query,
@@ -44,5 +45,11 @@ export class HikingsController {
   // @UseGuards(AuthCompaniesService)
   getUnCompleteHikes(@Req() req: Request) {
     return this.service.getUnCompleteHikes(req);
+  }
+
+  @Delete("Delete")
+  @ApiQuery({ name: "id", type: "number" })
+  deleteHike(@Query() query: { id: number }) {
+    return this.service.deleteHike(query.id);
   }
 }

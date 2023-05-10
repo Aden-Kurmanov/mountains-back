@@ -72,6 +72,11 @@ export class Hikings extends Model {
   })
   price: number;
 
+  @Column({
+    allowNull: false
+  })
+  maxPeople: number;
+
   @ForeignKey(() => Currencies)
   @Column({
     allowNull: false
@@ -80,4 +85,7 @@ export class Hikings extends Model {
 
   @BelongsTo(() => Currencies)
   currency: Currencies;
+
+  @Column
+  deletedAt: string;
 }

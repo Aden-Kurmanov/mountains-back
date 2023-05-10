@@ -85,7 +85,8 @@ export class HikingsService {
           startDate: {
             [Op.gte]: moment().format("YYYY-MM-DD")
           },
-          guideId: companyId
+          guideId: companyId,
+          deletedAt: null
         },
         include: [Levels, HikeTypes, Companies, Currencies]
       })
@@ -101,6 +102,21 @@ export class HikingsService {
     return {
       success: true,
       result: hikings
+    };
+  }
+
+  async deleteHike(id: number) {
+    await this.hikingRepository.update(
+      {
+        deletedAt: moment().format("YYYY-MM-DD HH:mm:ss")
+      },
+      {
+        where: { id }
+      }
+    );
+    return {
+      success: true,
+      result: null
     };
   }
 }
