@@ -62,4 +62,11 @@ export class HikingsController {
   deleteHike(@Query() query: { id: number }) {
     return this.service.deleteHike(query.id);
   }
+
+  @Delete("DeleteImage")
+  @ApiQuery({ name: "id", type: "number" })
+  @ApiQuery({ name: "image", type: "string" })
+  deleteImage(@Query() query: { id: number; image: string }) {
+    return this.service.deleteImage(query.id, query.image);
+  }
 }

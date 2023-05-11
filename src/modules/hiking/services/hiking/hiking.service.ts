@@ -30,12 +30,19 @@ export class HikingsService {
   }
 
   async getById(id: number) {
-    const hike = await this.hikingRepository.findOne({
-      where: {
-        id
-      },
-      include: [Levels, HikeTypes, Companies, Currencies]
-    });
+    const hike = await this.hikingRepository
+      .findOne({
+        where: {
+          id
+        },
+        include: [Levels, HikeTypes, Companies, Currencies]
+      })
+      .then((hike) => {
+        hike.images = (hike.images || []).map((image) => {
+          return "/images/" + image;
+        });
+        return hike;
+      });
     return {
       success: !!hike,
       result: hike
@@ -84,7 +91,7 @@ export class HikingsService {
       }
     });
 
-    const pathImages = existHike.images;
+    const pathImages = existHike.images || [];
 
     if (images && images.length > 0) {
       for (let i = 0; i < images.length; i++) {
@@ -168,6 +175,39 @@ export class HikingsService {
     return {
       success: true,
       result: null
+    };
+  }
+
+  async deleteImage(id: number, image: string) {
+    const existHike = await this.hikingRepository.findOne({
+      where: {
+        id
+      }
+    });
+
+    const split = image.split("/");
+    image = split[split.length - 1];
+    existHike.images = (existHike.images || []).filter((img) => img !== image);
+
+    fs.unlinkSync(
+      path.join(
+        __dirname,
+        "..",
+        "..",
+        "..",
+        "..",
+        "..",
+        "public",
+        "images",
+        image
+      )
+    );
+
+    await existHike.save();
+
+    return {
+      success: true,
+      result: existHike
     };
   }
 }
