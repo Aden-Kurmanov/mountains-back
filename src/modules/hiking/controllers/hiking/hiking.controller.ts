@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Post,
+  Put,
   Query,
   Req,
   UploadedFiles,
@@ -25,7 +26,7 @@ export class HikingsController {
     return this.service.getList();
   }
 
-  @Get("ById")
+  @Get("GetById")
   @ApiQuery({ name: "id", type: "number" })
   getById(@Query() query: { id: number }) {
     return this.service.getById(query.id);
@@ -38,6 +39,15 @@ export class HikingsController {
     @UploadedFiles() images: Express.Multer.File[]
   ) {
     return this.service.addHike(hike, images);
+  }
+
+  @Put("Edit")
+  @UseInterceptors(FilesInterceptor("images"))
+  edit(
+    @Body() hike: CreateHikingDto,
+    @UploadedFiles() images: Express.Multer.File[]
+  ) {
+    return this.service.editHike(hike, images);
   }
 
   @Get("GetUnCompleteHikes")

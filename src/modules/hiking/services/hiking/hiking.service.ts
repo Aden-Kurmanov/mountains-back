@@ -29,13 +29,17 @@ export class HikingsService {
     });
   }
 
-  getById(id: number) {
-    return this.hikingRepository.findOne({
+  async getById(id: number) {
+    const hike = await this.hikingRepository.findOne({
       where: {
         id
       },
       include: [Levels, HikeTypes, Companies, Currencies]
     });
+    return {
+      success: !!hike,
+      result: hike
+    };
   }
 
   async addHike(hike: CreateHikingDto, images: Express.Multer.File[]) {
@@ -70,6 +74,53 @@ export class HikingsService {
     return {
       success: true,
       result: hiking
+    };
+  }
+
+  async editHike(hike: CreateHikingDto, images: Express.Multer.File[]) {
+    const existHike = await this.hikingRepository.findOne({
+      where: {
+        id: hike.id
+      }
+    });
+
+    const pathImages = existHike.images;
+
+    if (images && images.length > 0) {
+      for (let i = 0; i < images.length; i++) {
+        const imageFileName = uuid() + path.extname(images[i].originalname);
+        const imagePath = path.join(
+          __dirname,
+          "..",
+          "..",
+          "..",
+          "..",
+          "..",
+          "public",
+          "images",
+          imageFileName
+        );
+        fs.writeFileSync(imagePath, images[i].buffer);
+
+        pathImages.push(imageFileName);
+      }
+    }
+
+    existHike.name = hike.name;
+    existHike.images = pathImages;
+    existHike.description = hike.description;
+    existHike.currencyId = hike.currencyId;
+    existHike.endDate = hike.endDate;
+    existHike.startDate = hike.startDate;
+    existHike.levelId = hike.levelId;
+    existHike.price = hike.price;
+    existHike.typeId = hike.typeId;
+
+    await existHike.save();
+
+    return {
+      success: true,
+      result: existHike.dataValues
     };
   }
 
