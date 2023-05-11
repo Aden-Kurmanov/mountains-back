@@ -69,4 +69,14 @@ export class HikingsController {
   deleteImage(@Query() query: { id: number; image: string }) {
     return this.service.deleteImage(query.id, query.image);
   }
+
+  @Get("GetHikesList")
+  @ApiQuery({ name: "levelId", type: "number" })
+  @ApiQuery({ name: "hikeTypeId", type: "number" })
+  @ApiQuery({ name: "month", type: "number" })
+  getHikesList(
+    @Query() query: { levelId: number; hikeTypeId: number; month: number }
+  ) {
+    return this.service.getHikesList(query);
+  }
 }

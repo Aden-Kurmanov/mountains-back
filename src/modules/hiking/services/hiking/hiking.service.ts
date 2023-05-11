@@ -210,4 +210,61 @@ export class HikingsService {
       result: existHike
     };
   }
+
+  async getHikesList(query: {
+    levelId: number;
+    hikeTypeId: number;
+    month: number;
+  }) {
+    const date = new Date(moment().year(), query.month - 1, 1);
+    const startDate = moment(date).startOf("month").format();
+    const endDate = moment(date).endOf("month").format();
+
+    let where = {
+      [Op.or]: {
+        startDate: {
+          [Op.and]: {
+            [Op.gte]: startDate,
+            [Op.lte]: endDate
+          }
+        },
+        endDate: {
+          [Op.and]: {
+            [Op.gte]: startDate,
+            [Op.lte]: endDate
+          }
+        }
+      },
+      deletedAt: {
+        [Op.is]: null
+      }
+    };
+
+    if (query.levelId) {
+      where = { ...where, ...{ levelId: query.levelId } };
+    }
+
+    if (query.hikeTypeId) {
+      where = { ...where, ...{ typeId: query.hikeTypeId } };
+    }
+
+    const hikes = await this.hikingRepository
+      .findAll({
+        where,
+        include: [Levels, HikeTypes, Companies, Currencies]
+      })
+      .then((hikes) => {
+        hikes.forEach((hike) => {
+          hike.images = hike.images.map((image) => {
+            return "/images/" + image;
+          });
+        });
+        return hikes;
+      });
+
+    return {
+      success: true,
+      result: hikes
+    };
+  }
 }
