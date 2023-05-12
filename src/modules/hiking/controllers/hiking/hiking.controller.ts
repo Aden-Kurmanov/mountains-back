@@ -79,4 +79,9 @@ export class HikingsController {
   ) {
     return this.service.getHikesList(query);
   }
+
+  @Post("InterestUser")
+  interestUser(@Req() req: Request, @Body() body: { id: number }) {
+    return this.service.interestUser(req, body);
+  }
 }

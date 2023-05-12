@@ -15,11 +15,14 @@ import { Levels } from "../../../levels/models/levels.model";
 import { Hikings } from "../../models/hiking.model";
 import { JwtService } from "@nestjs/jwt";
 import { getToken } from "../../../../shared/get-token";
+import { UserHikingInterest } from "../../../user-hiking-interest/models/user-hiking-interest.model";
 
 @Injectable()
 export class HikingsService {
   constructor(
     @InjectModel(Hikings) private hikingRepository: typeof Hikings,
+    @InjectModel(UserHikingInterest)
+    private interestRepository: typeof UserHikingInterest,
     private jwtService: JwtService
   ) {}
 
@@ -265,6 +268,40 @@ export class HikingsService {
     return {
       success: true,
       result: hikes
+    };
+  }
+
+  async interestUser(req: Request, body: { id: number }) {
+    const decoded = this.jwtService.decode(
+      getToken(req.headers["authorization-user"] as string)
+    );
+    const isExist = await this.interestRepository.findOne({
+      where: {
+        hikingId: body.id,
+        userId: decoded["userId"]
+      }
+    });
+
+    if (isExist) {
+      return {
+        success: false,
+        result: null,
+        message: "Вы уже заявку подавали"
+      };
+    }
+
+    await this.interestRepository.create({
+      ...{
+        hikingId: body.id,
+        userId: decoded["userId"],
+        comment: null
+      }
+    });
+
+    return {
+      success: true,
+      result: null,
+      message: null
     };
   }
 }
