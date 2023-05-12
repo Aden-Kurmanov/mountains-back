@@ -84,4 +84,10 @@ export class HikingsController {
   interestUser(@Req() req: Request, @Body() body: { id: number }) {
     return this.service.interestUser(req, body);
   }
+
+  @Get("GetInterestUsersByHikeId")
+  @ApiQuery({ name: "id", type: "number" })
+  getInterestUsersByHikeId(@Query() query: { id: number }) {
+    return this.service.getInterestUsersByHikeId(query.id);
+  }
 }

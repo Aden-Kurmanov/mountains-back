@@ -16,11 +16,13 @@ import { Hikings } from "../../models/hiking.model";
 import { JwtService } from "@nestjs/jwt";
 import { getToken } from "../../../../shared/get-token";
 import { UserHikingInterest } from "../../../user-hiking-interest/models/user-hiking-interest.model";
+import { Users } from "../../../users/models/users.model";
 
 @Injectable()
 export class HikingsService {
   constructor(
     @InjectModel(Hikings) private hikingRepository: typeof Hikings,
+    @InjectModel(Users) private usersRepository: typeof Users,
     @InjectModel(UserHikingInterest)
     private interestRepository: typeof UserHikingInterest,
     private jwtService: JwtService
@@ -302,6 +304,37 @@ export class HikingsService {
       success: true,
       result: null,
       message: null
+    };
+  }
+
+  async getInterestUsersByHikeId(id: number) {
+    const interestUsers = await this.interestRepository.findAll({
+      where: {
+        hikingId: id
+      }
+    });
+
+    const users = await this.usersRepository.findAll({
+      where: {
+        id: {
+          [Op.in]: interestUsers.map((e) => e.userId)
+        }
+      }
+    });
+
+    return {
+      success: true,
+      result: users.map((user) => {
+        return {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          patronymic: user.patronymic,
+          email: user.email,
+          phone: user.phone,
+          instagram: user.instagram
+        };
+      })
     };
   }
 }
