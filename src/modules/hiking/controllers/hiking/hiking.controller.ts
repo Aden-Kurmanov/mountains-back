@@ -90,4 +90,9 @@ export class HikingsController {
   getInterestUsersByHikeId(@Query() query: { id: number }) {
     return this.service.getInterestUsersByHikeId(query.id);
   }
+
+  @Post("AddUserToHike")
+  addUserToHike(@Body() body: { hikeId: number; userId: number }) {
+    return this.service.addUserToHike(body);
+  }
 }

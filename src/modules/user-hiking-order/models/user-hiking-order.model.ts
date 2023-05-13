@@ -8,7 +8,7 @@ import {
 import { Hikings } from "../../hiking/models/hiking.model";
 import { Users } from "../../users/models/users.model";
 
-@Table
+@Table({ tableName: "UserHikingOrder" })
 export class UserHikingOrder extends Model {
   @ForeignKey(() => Hikings)
   @Column({

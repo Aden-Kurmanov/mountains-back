@@ -17,12 +17,15 @@ import { JwtService } from "@nestjs/jwt";
 import { getToken } from "../../../../shared/get-token";
 import { UserHikingInterest } from "../../../user-hiking-interest/models/user-hiking-interest.model";
 import { Users } from "../../../users/models/users.model";
+import { UserHikingOrder } from "../../../user-hiking-order/models/user-hiking-order.model";
 
 @Injectable()
 export class HikingsService {
   constructor(
     @InjectModel(Hikings) private hikingRepository: typeof Hikings,
     @InjectModel(Users) private usersRepository: typeof Users,
+    @InjectModel(UserHikingOrder)
+    private orderRepository: typeof UserHikingOrder,
     @InjectModel(UserHikingInterest)
     private interestRepository: typeof UserHikingInterest,
     private jwtService: JwtService
@@ -335,6 +338,35 @@ export class HikingsService {
           instagram: user.instagram
         };
       })
+    };
+  }
+
+  async addUserToHike(body: { hikeId: number; userId: number }) {
+    const isExists = await this.orderRepository.findOne({
+      where: {
+        hikingId: body.hikeId,
+        userId: body.userId
+      }
+    });
+
+    if (isExists) {
+      return {
+        success: false,
+        result: null,
+        message: "Пользователь уже добавлен в поход"
+      };
+    }
+
+    await this.orderRepository.create({
+      ...{
+        hikingId: body.hikeId,
+        userId: body.userId
+      }
+    });
+
+    return {
+      success: true,
+      result: null
     };
   }
 }
