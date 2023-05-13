@@ -156,13 +156,28 @@ export class HikingsService {
         },
         include: [Levels, HikeTypes, Companies, Currencies]
       })
-      .then((data) => {
+      .then(async (data) => {
+        const orders = await this.orderRepository.findAll({
+          where: {
+            hikingId: {
+              [Op.in]: data.map((e) => e.id)
+            }
+          }
+        });
+
         data.forEach((hike) => {
           hike.images = (hike.images || []).map((image) => {
             return "/images/" + image;
           });
         });
-        return data;
+        return data.map((hike) => {
+          return {
+            ...hike.dataValues,
+            ...{
+              countPeople: orders.filter((e) => e.hikingId === hike.id).length
+            }
+          };
+        });
       });
 
     return {
@@ -317,13 +332,30 @@ export class HikingsService {
       }
     });
 
-    const users = await this.usersRepository.findAll({
-      where: {
-        id: {
-          [Op.in]: interestUsers.map((e) => e.userId)
+    const users = await this.usersRepository
+      .findAll({
+        where: {
+          id: {
+            [Op.in]: interestUsers.map((e) => e.userId)
+          }
         }
-      }
-    });
+      })
+      .then(async (users) => {
+        const orderUsers = await this.orderRepository.findAll({
+          where: {
+            hikingId: id
+          }
+        });
+
+        return users.map((user) => {
+          return {
+            ...user.dataValues,
+            ...{
+              isAddedToHike: !!orderUsers.some((e) => e.userId === user.id)
+            }
+          };
+        });
+      });
 
     return {
       success: true,
@@ -335,7 +367,8 @@ export class HikingsService {
           patronymic: user.patronymic,
           email: user.email,
           phone: user.phone,
-          instagram: user.instagram
+          instagram: user.instagram,
+          isAddedToHike: user.isAddedToHike
         };
       })
     };
