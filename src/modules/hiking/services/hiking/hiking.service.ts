@@ -402,4 +402,33 @@ export class HikingsService {
       result: null
     };
   }
+
+  async getUnCompletedHikesForUser(request: Request) {
+    const decode = this.jwtService.decode(
+      request.headers["authorization-user"] as string
+    );
+    const userId = decode["userId"];
+
+    const ordered = await this.orderRepository.findAll({
+      where: {
+        userId
+      }
+    });
+
+    const hikings = await this.hikingRepository.findAll({
+      where: {
+        id: {
+          [Op.in]: ordered.map((e) => e.hikingId)
+        },
+        endDate: {
+          [Op.gte]: moment().format("YYYY-MM-DD")
+        }
+      }
+    });
+
+    return {
+      success: true,
+      result: hikings
+    };
+  }
 }

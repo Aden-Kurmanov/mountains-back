@@ -95,4 +95,9 @@ export class HikingsController {
   addUserToHike(@Body() body: { hikeId: number; userId: number }) {
     return this.service.addUserToHike(body);
   }
+
+  @Get("GetUnCompletedHikesForUser")
+  getUnCompletedHikesForUser(@Req() request: Request) {
+    return this.service.getUnCompletedHikesForUser(request);
+  }
 }
