@@ -405,7 +405,7 @@ export class HikingsService {
 
   async getUnCompletedHikesForUser(request: Request) {
     const decode = this.jwtService.decode(
-      request.headers["authorization-user"] as string
+      getToken(request.headers["authorization-user"] as string)
     );
     const userId = decode["userId"];
 
@@ -428,7 +428,16 @@ export class HikingsService {
 
     return {
       success: true,
-      result: hikings
+      result: hikings.map((hike) => {
+        return {
+          ...hike.dataValues,
+          ...{
+            images: hike.images.map((image) => {
+              return "/images/" + image;
+            })
+          }
+        };
+      })
     };
   }
 }

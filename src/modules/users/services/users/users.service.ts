@@ -242,7 +242,7 @@ export class UsersService {
 
   async getStatistic(request: Request) {
     const decode = this.jwtService.decode(
-      request.headers["authorization-user"] as string
+      getToken(request.headers["authorization-user"] as string)
     );
     const userId = decode["userId"];
 
