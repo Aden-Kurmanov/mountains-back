@@ -54,4 +54,9 @@ export class CompaniesController {
   updateCompany(@Body() company: UpdateCompanyDto, @Req() request: Request) {
     return this.service.updateCompany(company, request);
   }
+
+  @Get("GetStatistic")
+  getStatistic(@Req() request: Request) {
+    return this.service.getStatistic(request);
+  }
 }

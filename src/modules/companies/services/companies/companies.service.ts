@@ -11,12 +11,19 @@ import { CompanyLoginDto } from "../../models/company-login-dto.model";
 import { UpdateCompanyDto } from "../../models/update-company.dto";
 import { Request } from "express";
 import { getToken } from "../../../../shared/get-token";
+import { Hikings } from "../../../hiking/models/hiking.model";
+import * as moment from "moment";
+import { UserHikingOrder } from "../../../user-hiking-order/models/user-hiking-order.model";
+import { Op } from "sequelize";
 
 @Injectable()
 export class CompaniesService {
   constructor(
     private jwtService: JwtService,
-    @InjectModel(Companies) private companiesRepository: typeof Companies
+    @InjectModel(Companies) private companiesRepository: typeof Companies,
+    @InjectModel(Hikings) private hikingRepository: typeof Hikings,
+    @InjectModel(UserHikingOrder)
+    private orderRepository: typeof UserHikingOrder
   ) {}
 
   getList() {
@@ -190,6 +197,43 @@ export class CompaniesService {
         email: newCompany.email,
         phone: newCompany.phone,
         instagram: newCompany.instagram
+      }
+    };
+  }
+
+  async getStatistic(request: Request) {
+    const decode = this.jwtService.decode(
+      request.headers["authorization-company"] as string
+    );
+    const companyId = decode["companyId"];
+
+    const hikings = await this.hikingRepository.findAll({
+      where: {
+        guideId: companyId
+      }
+    });
+
+    const completedHikes = hikings.filter((hike) => {
+      return hike.endDate < moment().format("YYYY-MM-DD");
+    });
+
+    const ordered = await this.orderRepository.findAll({
+      where: {
+        hikingId: {
+          [Op.in]: hikings.map((e) => e.id)
+        }
+      }
+    });
+
+    const uniquePeople = [...new Set(ordered.map((e) => e.userId))].length;
+
+    return {
+      success: true,
+      result: {
+        totalHikes: hikings.length,
+        completedHikes: completedHikes.length,
+        totalPeople: ordered.length,
+        uniquePeople: uniquePeople
       }
     };
   }
