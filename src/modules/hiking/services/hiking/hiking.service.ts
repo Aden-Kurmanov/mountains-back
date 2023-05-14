@@ -415,17 +415,27 @@ export class HikingsService {
       }
     });
 
-    const hikings = await this.hikingRepository.findAll({
-      where: {
-        id: {
-          [Op.in]: ordered.map((e) => e.hikingId)
+    const hikings = await this.hikingRepository
+      .findAll({
+        where: {
+          id: {
+            [Op.in]: ordered.map((e) => e.hikingId)
+          },
+          endDate: {
+            [Op.gte]: moment().format("YYYY-MM-DD")
+          }
         },
-        endDate: {
-          [Op.gte]: moment().format("YYYY-MM-DD")
-        }
-      },
-      include: [Levels, HikeTypes, Companies, Currencies]
-    });
+        include: [Levels, HikeTypes, Companies, Currencies]
+      })
+      .then((hikes) => {
+        hikes.forEach((hike) => {
+          hike.dataValues["countPeople"] = ordered.filter(
+            (e) => e.hikingId === hike.id
+          ).length;
+        });
+
+        return hikes;
+      });
 
     return {
       success: true,
