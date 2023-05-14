@@ -8,6 +8,9 @@ import { Companies } from "../../models/companies.model";
 import { CreateCompanyDto } from "../../models/create-company-dto.model";
 import { JwtService } from "@nestjs/jwt";
 import { CompanyLoginDto } from "../../models/company-login-dto.model";
+import { UpdateCompanyDto } from "../../models/update-company.dto";
+import { Request } from "express";
+import { getToken } from "../../../../shared/get-token";
 
 @Injectable()
 export class CompaniesService {
@@ -148,6 +151,40 @@ export class CompaniesService {
         phone: company.phone,
         instagram: company.instagram
       }
+    };
+  }
+
+  async updateCompany(body: UpdateCompanyDto, request: Request) {
+    const decode = this.jwtService.decode(
+      getToken(request.headers["authorization-company"] as string)
+    );
+    const companyId = decode["companyId"];
+
+    const company = await this.companiesRepository.findOne({
+      where: {
+        id: companyId
+      }
+    });
+
+    if (body.password !== company.password) {
+      return {
+        success: false,
+        result: null,
+        message: "Неверный пароль"
+      };
+    }
+
+    await company.update({
+      name: body.name,
+      email: body.email,
+      phone: body.phone,
+      instagram: body.instagram,
+      password: body.newPassword
+    });
+
+    return {
+      success: true,
+      result: null
     };
   }
 }

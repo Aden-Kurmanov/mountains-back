@@ -3,7 +3,9 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Query,
+  Req,
   UsePipes,
   ValidationPipe
 } from "@nestjs/common";
@@ -11,6 +13,8 @@ import { ApiQuery, ApiTags } from "@nestjs/swagger";
 import { CompaniesService } from "../../services/companies/companies.service";
 import { CreateCompanyDto } from "../../models/create-company-dto.model";
 import { CompanyLoginDto } from "../../models/company-login-dto.model";
+import { Request } from "express";
+import { UpdateCompanyDto } from "../../models/update-company.dto";
 
 @ApiTags("Companies")
 @Controller("Companies")
@@ -44,5 +48,10 @@ export class CompaniesController {
   @UsePipes(ValidationPipe)
   login(@Body() body: CompanyLoginDto) {
     return this.service.login(body);
+  }
+
+  @Put("UpdateCompany")
+  updateCompany(@Body() company: UpdateCompanyDto, @Req() request: Request) {
+    return this.service.updateCompany(company, request);
   }
 }
