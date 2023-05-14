@@ -423,7 +423,8 @@ export class HikingsService {
         endDate: {
           [Op.gte]: moment().format("YYYY-MM-DD")
         }
-      }
+      },
+      include: [Levels, HikeTypes, Companies, Currencies]
     });
 
     return {

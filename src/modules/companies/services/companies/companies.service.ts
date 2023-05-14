@@ -203,7 +203,7 @@ export class CompaniesService {
 
   async getStatistic(request: Request) {
     const decode = this.jwtService.decode(
-      request.headers["authorization-company"] as string
+      getToken(request.headers["authorization-company"] as string)
     );
     const companyId = decode["companyId"];
 
