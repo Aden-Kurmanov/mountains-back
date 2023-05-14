@@ -6,7 +6,9 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
+  Req,
   UsePipes,
   ValidationPipe
 } from "@nestjs/common";
@@ -15,6 +17,8 @@ import { ApiQuery, ApiTags } from "@nestjs/swagger";
 import { UsersService } from "../../services/users/users.service";
 import { CreateUserDto } from "../../dto/users.dtos";
 import { AuthUser } from "../../dto/auth-user.dtos";
+import { Request } from "express";
+import { UpdateUserDto } from "../../dto/update-user.dto";
 
 @ApiTags("Users")
 @Controller("Users")
@@ -48,5 +52,10 @@ export class UsersController {
   @HttpCode(200)
   login(@Body() authUser: AuthUser) {
     return this.userService.auth(authUser);
+  }
+
+  @Put("UpdateUser")
+  updateUser(@Body() updateUserDto: UpdateUserDto, @Req() request: Request) {
+    return this.userService.updateUser(updateUserDto, request);
   }
 }

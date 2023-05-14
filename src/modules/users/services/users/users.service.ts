@@ -9,6 +9,8 @@ import { CreateUserDto } from "../../dto/users.dtos";
 import { AuthUser } from "../../dto/auth-user.dtos";
 import { Users } from "../../models/users.model";
 import { JwtService } from "@nestjs/jwt";
+import { UpdateUserDto } from "../../dto/update-user.dto";
+import { Request } from "express";
 
 @Injectable()
 export class UsersService {
@@ -177,6 +179,55 @@ export class UsersService {
         fullName:
           `${user.lastName} ${user.firstName}` +
           (user.patronymic ? ` ${user.patronymic}` : "")
+      }
+    };
+  }
+
+  async updateUser(body: UpdateUserDto, request: Request) {
+    const decode = this.jwtService.decode(
+      request.headers["authorization-user"] as string
+    );
+
+    const userId = decode["userId"];
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId
+      }
+    });
+
+    if (user.password !== body.password) {
+      return {
+        success: false,
+        result: null,
+        message: "Неверный пароль"
+      };
+    }
+
+    const newUser = await user.update({
+      firstName: body.firstName,
+      lastName: body.lastName,
+      email: body.email,
+      instagram: body.instagram,
+      password: body.newPassword,
+      country: body.country,
+      patronymic: body.patronymic,
+      phone: body.phone
+    });
+
+    return {
+      success: true,
+      result: {
+        country: newUser.country,
+        email: newUser.email,
+        firstName: newUser.firstName,
+        id: newUser.id,
+        instagram: newUser.instagram,
+        lastName: newUser.lastName,
+        patronymic: newUser.patronymic,
+        phone: newUser.phone,
+        fullName:
+          `${newUser.lastName} ${newUser.firstName}` +
+          (newUser.patronymic ? ` ${newUser.patronymic}` : "")
       }
     };
   }

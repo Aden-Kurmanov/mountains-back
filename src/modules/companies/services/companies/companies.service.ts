@@ -174,7 +174,7 @@ export class CompaniesService {
       };
     }
 
-    await company.update({
+    const newCompany = await company.update({
       name: body.name,
       email: body.email,
       phone: body.phone,
@@ -184,7 +184,13 @@ export class CompaniesService {
 
     return {
       success: true,
-      result: null
+      result: {
+        id: newCompany.id,
+        name: newCompany.name,
+        email: newCompany.email,
+        phone: newCompany.phone,
+        instagram: newCompany.instagram
+      }
     };
   }
 }
