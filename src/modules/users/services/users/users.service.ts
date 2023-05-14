@@ -15,6 +15,7 @@ import { UserHikingOrder } from "../../../user-hiking-order/models/user-hiking-o
 import { Hikings } from "../../../hiking/models/hiking.model";
 import { Op } from "sequelize";
 import * as moment from "moment";
+import { getToken } from "../../../../shared/get-token";
 
 @Injectable()
 export class UsersService {
@@ -192,7 +193,7 @@ export class UsersService {
 
   async updateUser(body: UpdateUserDto, request: Request) {
     const decode = this.jwtService.decode(
-      request.headers["authorization-user"] as string
+      getToken(request.headers["authorization-user"] as string)
     );
 
     const userId = decode["userId"];
