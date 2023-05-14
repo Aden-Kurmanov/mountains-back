@@ -58,4 +58,9 @@ export class UsersController {
   updateUser(@Body() updateUserDto: UpdateUserDto, @Req() request: Request) {
     return this.userService.updateUser(updateUserDto, request);
   }
+
+  @Get("GetStatistic")
+  getStatistic(@Req() request: Request) {
+    return this.userService.getStatistic(request);
+  }
 }

@@ -11,12 +11,19 @@ import { Users } from "../../models/users.model";
 import { JwtService } from "@nestjs/jwt";
 import { UpdateUserDto } from "../../dto/update-user.dto";
 import { Request } from "express";
+import { UserHikingOrder } from "../../../user-hiking-order/models/user-hiking-order.model";
+import { Hikings } from "../../../hiking/models/hiking.model";
+import { Op } from "sequelize";
+import * as moment from "moment";
 
 @Injectable()
 export class UsersService {
   constructor(
     private jwtService: JwtService,
-    @InjectModel(Users) private userRepository: typeof Users
+    @InjectModel(Users) private userRepository: typeof Users,
+    @InjectModel(Hikings) private hikingRepository: typeof Hikings,
+    @InjectModel(UserHikingOrder)
+    private orderRepository: typeof UserHikingOrder
   ) {}
 
   getUsers() {
@@ -228,6 +235,39 @@ export class UsersService {
         fullName:
           `${newUser.lastName} ${newUser.firstName}` +
           (newUser.patronymic ? ` ${newUser.patronymic}` : "")
+      }
+    };
+  }
+
+  async getStatistic(request: Request) {
+    const decode = this.jwtService.decode(
+      request.headers["authorization-user"] as string
+    );
+    const userId = decode["userId"];
+
+    const ordered = await this.orderRepository.findAll({
+      where: {
+        userId
+      }
+    });
+
+    const hikings = await this.hikingRepository.findAll({
+      where: {
+        id: {
+          [Op.in]: ordered.map((e) => e.hikingId)
+        }
+      }
+    });
+
+    const completedHikes = hikings.filter((e) => {
+      return e.endDate < moment().format("YYYY-MM-DD");
+    });
+
+    return {
+      success: true,
+      result: {
+        totalHikes: ordered.length,
+        completedHikes: completedHikes.length
       }
     };
   }
