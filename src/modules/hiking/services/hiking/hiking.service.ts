@@ -498,19 +498,28 @@ export class HikingsService {
   }
 
   async getNearest() {
-    // const nearest = await this.hikingRepository.findAll({
-    //   where: {
-    //     startDate: {
-    //       [Op.gte]: moment().format("YYYY-MM-DD")
-    //     }
-    //   }
-    // });
-    //
-    // console.log("nearest: ", nearest);
+    const nearest = await this.hikingRepository.findAll({
+      where: {
+        startDate: {
+          [Op.gte]: moment().format("YYYY-MM-DD")
+        }
+      },
+      include: [Levels, HikeTypes, Companies, Currencies],
+      limit: 10
+    });
 
     return {
       success: true,
-      result: null
+      result: nearest.map((hike) => {
+        return {
+          ...hike.dataValues,
+          ...{
+            images: hike.images.map((image) => {
+              return "/images/" + image;
+            })
+          }
+        };
+      })
     };
   }
 }
