@@ -485,6 +485,12 @@ export class HikingsService {
               images: hike.images.map((image) => {
                 return "/images/" + image;
               })
+            },
+            ...{
+              countPeople: Number(
+                orders.find((order) => order.hikingId === hike.id).dataValues
+                  .count
+              )
             }
           };
         })
