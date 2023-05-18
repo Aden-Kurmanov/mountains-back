@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
+import { col, fn, literal, Op } from "sequelize";
 import { InjectModel } from "@nestjs/sequelize";
 import { v4 as uuid } from "uuid";
 import { Request } from "express";
 import * as moment from "moment";
-import { Op } from "sequelize";
 import * as path from "path";
 import * as fs from "fs";
 
@@ -449,6 +449,62 @@ export class HikingsService {
           }
         };
       })
+    };
+  }
+
+  async getPopulars() {
+    const hikings = await this.hikingRepository.findAll({
+      where: {
+        startDate: {
+          [Op.gte]: moment().format("YYYY-MM-DD")
+        }
+      },
+      include: [Levels, HikeTypes, Companies, Currencies]
+    });
+
+    const orders = await this.orderRepository.findAll({
+      where: {
+        hikingId: {
+          [Op.in]: hikings.map((hike) => hike.id)
+        }
+      },
+      attributes: ["hikingId", [fn("COUNT", col("hikingId")), "count"]],
+      group: ["hikingId"],
+      order: [[literal("count"), "DESC"]],
+      limit: 3
+    });
+
+    return {
+      success: true,
+      result: hikings
+        .filter((hike) => orders.some((order) => order.hikingId === hike.id))
+        .map((hike) => {
+          return {
+            ...hike.dataValues,
+            ...{
+              images: hike.images.map((image) => {
+                return "/images/" + image;
+              })
+            }
+          };
+        })
+    };
+  }
+
+  async getNearest() {
+    // const nearest = await this.hikingRepository.findAll({
+    //   where: {
+    //     startDate: {
+    //       [Op.gte]: moment().format("YYYY-MM-DD")
+    //     }
+    //   }
+    // });
+    //
+    // console.log("nearest: ", nearest);
+
+    return {
+      success: true,
+      result: null
     };
   }
 }

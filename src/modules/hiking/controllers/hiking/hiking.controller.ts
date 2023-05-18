@@ -100,4 +100,14 @@ export class HikingsController {
   getUnCompletedHikesForUser(@Req() request: Request) {
     return this.service.getUnCompletedHikesForUser(request);
   }
+
+  @Get("GetPopulars")
+  getPopulars() {
+    return this.service.getPopulars();
+  }
+
+  @Get("GetNearest")
+  getNearest() {
+    return this.service.getNearest();
+  }
 }
