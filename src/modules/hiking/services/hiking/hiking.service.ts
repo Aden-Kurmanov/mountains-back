@@ -18,6 +18,7 @@ import { getToken } from "../../../../shared/get-token";
 import { UserHikingInterest } from "../../../user-hiking-interest/models/user-hiking-interest.model";
 import { Users } from "../../../users/models/users.model";
 import { UserHikingOrder } from "../../../user-hiking-order/models/user-hiking-order.model";
+import * as process from "process";
 
 @Injectable()
 export class HikingsService {
@@ -60,22 +61,24 @@ export class HikingsService {
   async addHike(hike: CreateHikingDto, images: Express.Multer.File[]) {
     const pathImages: string[] = [];
     if (images && images.length > 0) {
-      for (let i = 0; i < images.length; i++) {
-        const imageFileName = uuid() + path.extname(images[i].originalname);
-        const imagePath = path.join(
-          __dirname,
-          "..",
-          "..",
-          "..",
-          "..",
-          "..",
-          "public",
-          "images",
-          imageFileName
-        );
-        fs.writeFileSync(imagePath, images[i].buffer);
+      try {
+        for (let i = 0; i < images.length; i++) {
+          const imageFileName = uuid() + path.extname(images[i].originalname);
+          const baseDir = process.cwd();
+          const relativePath = path.join("public", "images", imageFileName);
+          const absolutePath = path.resolve(baseDir, relativePath);
+          fs.writeFile(absolutePath, images[i].buffer, (error) => {
+            console.log("writeFile: ", error);
+          });
 
-        pathImages.push(imageFileName);
+          pathImages.push(imageFileName);
+        }
+      } catch (e) {
+        return {
+          success: false,
+          result: [],
+          error: e
+        };
       }
     }
 
@@ -104,18 +107,12 @@ export class HikingsService {
     if (images && images.length > 0) {
       for (let i = 0; i < images.length; i++) {
         const imageFileName = uuid() + path.extname(images[i].originalname);
-        const imagePath = path.join(
-          __dirname,
-          "..",
-          "..",
-          "..",
-          "..",
-          "..",
-          "public",
-          "images",
-          imageFileName
-        );
-        fs.writeFileSync(imagePath, images[i].buffer);
+        const baseDir = process.cwd();
+        const relativePath = path.join("public", "images", imageFileName);
+        const absolutePath = path.resolve(baseDir, relativePath);
+        fs.writeFile(absolutePath, images[i].buffer, (error) => {
+          console.log("writeFile: ", error);
+        });
 
         pathImages.push(imageFileName);
       }
@@ -130,6 +127,7 @@ export class HikingsService {
     existHike.levelId = hike.levelId;
     existHike.price = hike.price;
     existHike.typeId = hike.typeId;
+    existHike.maxPeople = hike.maxPeople;
 
     await existHike.save();
 
@@ -504,6 +502,7 @@ export class HikingsService {
           [Op.gte]: moment().format("YYYY-MM-DD")
         }
       },
+      order: [["startDate", "ASC"]],
       include: [Levels, HikeTypes, Companies, Currencies],
       limit: 10
     });

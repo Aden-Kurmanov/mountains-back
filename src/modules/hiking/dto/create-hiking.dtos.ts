@@ -10,4 +10,5 @@ export interface CreateHikingDto {
   images: Express.Multer.File[];
   price: number;
   currencyId: number;
+  maxPeople: number;
 }

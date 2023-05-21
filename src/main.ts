@@ -3,10 +3,15 @@ import { AppModule } from "./app.module";
 import { join } from "path";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { NestExpressApplication } from "@nestjs/platform-express";
+import * as process from "process";
+import * as path from "path";
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.useStaticAssets(join(__dirname, "..", "public"));
+  const baseDir = process.cwd();
+  const relativePath = path.join("public");
+  const absolutePath = path.resolve(baseDir, relativePath);
+  app.useStaticAssets(join(absolutePath));
   app.setGlobalPrefix("api");
 
   const config = new DocumentBuilder()
