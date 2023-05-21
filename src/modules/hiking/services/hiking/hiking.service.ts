@@ -102,7 +102,7 @@ export class HikingsService {
       }
     });
 
-    const pathImages = existHike.images || [];
+    const pathImages: string[] = existHike.images || [];
 
     if (images && images.length > 0) {
       for (let i = 0; i < images.length; i++) {
@@ -118,22 +118,35 @@ export class HikingsService {
       }
     }
 
-    existHike.name = hike.name;
-    existHike.images = pathImages;
-    existHike.description = hike.description;
-    existHike.currencyId = hike.currencyId;
-    existHike.endDate = hike.endDate;
-    existHike.startDate = hike.startDate;
-    existHike.levelId = hike.levelId;
-    existHike.price = hike.price;
-    existHike.typeId = hike.typeId;
-    existHike.maxPeople = hike.maxPeople;
+    await this.hikingRepository.update(
+      {
+        name: hike.name,
+        images: pathImages,
+        description: hike.description,
+        currencyId: hike.currencyId,
+        endDate: hike.endDate,
+        startDate: hike.startDate,
+        levelId: hike.levelId,
+        price: hike.price,
+        typeId: hike.typeId,
+        maxPeople: hike.maxPeople
+      },
+      {
+        where: {
+          id: hike.id
+        }
+      }
+    );
 
-    await existHike.save();
+    const updated = await this.hikingRepository.findOne({
+      where: {
+        id: hike.id
+      }
+    });
 
     return {
       success: true,
-      result: existHike.dataValues
+      result: updated.dataValues
     };
   }
 
